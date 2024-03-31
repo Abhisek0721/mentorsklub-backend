@@ -1,9 +1,9 @@
 import { Controller, Get } from '@nestjs/common';
-import { UserService } from '@modules/users/services/user.service';
+import { UserService } from '@modules/mentor/users/services/user.service';
 import { ApiUtilsService } from '@utils/utils.service';
 
-@Controller('users')
-export class UserController {
+@Controller()
+export class AuthController {
   constructor(
     private readonly userService: UserService,
     private readonly apiUtils: ApiUtilsService,
