@@ -14,16 +14,16 @@ async function bootstrap() {
   // Increase multipart file upload limit to 10MB
   // app.use(json({ limit: '200mb' }));
 
+  // Return "<h1> Running on port 3000 </h1>" for the root route
+  // app.use('/', (req: Request, res: Response) => {
+  //   res.send(`<h1> Running on port: ${ConstantEnv.PORT} </h1>`);
+  // });
+
   app.setGlobalPrefix('/api');
   app.enableShutdownHooks();
 
-  // Return "<h1> Running on port 3000 </h1>" for the root route
-  app.use('/', (req: Request, res: Response) => {
-    res.send(`<h1> Running on port: ${ConstantEnv.PORT} </h1>`);
-  });
-
-  await app.listen(ConstantEnv.PORT, "0.0.0.0", async () => {
-    console.log(`Backend URL: ${await app.getUrl()}`)
+  await app.listen(ConstantEnv.PORT, '0.0.0.0', async () => {
+    console.log(`Backend URL: ${await app.getUrl()}`);
   });
 }
 bootstrap();
