@@ -1,3 +1,5 @@
+import { types } from "util";
+
 export const Errors = {
   MALFORMED_REQUEST: 'MALFORMED_REQUEST',
   UNAUTHORIZED: 'UNAUTHORIZED',
@@ -17,3 +19,5 @@ export enum STATUS {
   ACTIVE = 'Active',
   INACTIVE = 'Inactive',
 }
+
+export const DATABASE_NAME = process.env.DATABASE_NAME || "mentorsklub";

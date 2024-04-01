@@ -1,11 +1,11 @@
 import { Controller, Get } from '@nestjs/common';
-import { UserService } from '@modules/mentor/users/services/user.service';
+import { MentorUserService } from '@modules/mentor/mentor_user/services/mentorUser.service';
 import { ApiUtilsService } from '@utils/utils.service';
 
 @Controller()
 export class AuthController {
   constructor(
-    private readonly userService: UserService,
+    private readonly userService: MentorUserService,
     private readonly apiUtils: ApiUtilsService,
   ) {}
 

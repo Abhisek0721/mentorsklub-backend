@@ -1,17 +1,17 @@
 import { Controller, Get } from '@nestjs/common';
-import { UserService } from '@modules/mentee/users/services/user.service';
+import { MentorUserService } from '@modules/mentor/mentor_user/services/mentorUser.service';
 import { ApiUtilsService } from '@utils/utils.service';
 
 @Controller()
-export class UserController {
+export class MentorUserController {
   constructor(
-    private readonly userService: UserService,
+    private readonly mentorUserService: MentorUserService,
     private readonly apiUtils: ApiUtilsService,
   ) {}
 
   @Get('/')
   async getAllUsers() {
-    const users = await this.userService.getUser();
+    const users = await this.mentorUserService.getUser();
     const response = this.apiUtils.make_response(users);
     return response;
   }
