@@ -1,4 +1,6 @@
-import { types } from "util";
+import { ConstantEnv } from "./constant-env";
+
+export default ConstantEnv;
 
 export const Errors = {
   MALFORMED_REQUEST: 'MALFORMED_REQUEST',
