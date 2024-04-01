@@ -4,16 +4,20 @@ import { MenteeUserService } from '@modules/mentee/mentee_user/services/menteeUs
 import { MongooseModule } from '@nestjs/mongoose';
 import { User, UserSchema } from '@modules/common/users/models/users.model';
 import { DATABASE_NAME } from '@constants/index';
+import { Mentee, MenteeSchema } from './models/mentee.model';
 
 @Module({
   imports: [
     MongooseModule.forFeature(
-      [{ name: User.name, schema: UserSchema }],
+      [
+        { name: User.name, schema: UserSchema },
+        { name: Mentee.name, schema: MenteeSchema },
+      ],
       DATABASE_NAME,
     ),
   ],
   controllers: [MenteeUserController],
   providers: [MenteeUserService],
-  exports: [MenteeUserService]
+  exports: [MenteeUserService],
 })
 export class MenteeUsersModule {}

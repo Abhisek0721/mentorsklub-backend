@@ -1,18 +1,26 @@
-import { Controller, Get } from '@nestjs/common';
-import { MentorUserService } from '@modules/mentor/mentor_user/services/mentorUser.service';
+import { Controller, Get, Post } from '@nestjs/common';
 import { ApiUtilsService } from '@utils/utils.service';
+import { AuthService } from '../services/auth.service';
 
 @Controller()
 export class AuthController {
   constructor(
-    private readonly userService: MentorUserService,
+    private readonly authService: AuthService,
     private readonly apiUtils: ApiUtilsService,
   ) {}
 
-  @Get('/')
-  async getAllUsers() {
-    const users = await this.userService.getUser();
-    const response = this.apiUtils.make_response(users);
-    return response;
+  @Post('/login')
+  async mentorLogin() {
+    // const users = await this.userService.getUser();
+    // const response = this.apiUtils.make_response(users);
+    // return response;
   }
+
+  @Post('/signup')
+  async mentorSignup() {
+    // const users = await this.userService.getUser();
+    // const response = this.apiUtils.make_response(users);
+    // return response;
+  }
+
 }
