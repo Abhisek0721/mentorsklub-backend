@@ -21,3 +21,21 @@ export enum STATUS {
 }
 
 export const DATABASE_NAME = process.env.DATABASE_NAME || "mentorsklub";
+
+export enum MentorshipField {
+  Programming = "Programming",
+  Finance = "Finance",
+  Business = "Business",
+  Marketing = "Marketing",
+  Design = "Design",
+  Engineering = "Engineering",
+  Health = "Health",
+  Education = "Education",
+  Science = "Science",
+  Technology = "Technology",
+  Arts = "Arts",
+  Language = "Language",
+  Music = "Music",
+  Sports = "Sports",
+  Other = "Other"
+}
