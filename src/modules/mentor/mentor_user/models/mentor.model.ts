@@ -8,7 +8,7 @@ export class Mentor extends Document {
   @Prop({ type: 'ObjectId', ref: 'User', unique: true, required: true })
   userId: User;
 
-  @Prop({ type: String, enum: MentorshipField, default: null, required: true  })
+  @Prop({ type: String, enum: MentorshipField, default: null, required: true })
   field: MentorshipField;
 
   @Prop({
@@ -18,40 +18,58 @@ export class Mentor extends Document {
       roadName: String,
       city: String,
       state: String,
-      pincode: String
+      pincode: String,
     },
     default: {
       latitude: null,
       longitude: null,
-      roadName: "",
-      city: "",
-      state: "",
-      pincode: ""
-    }
+      roadName: '',
+      city: '',
+      state: '',
+      pincode: '',
+    },
   })
   location: {
-    latitude: number,
-    longitude: number,
-    roadName: string,
-    city: string,
-    state: string,
-    pincode: string
+    latitude: number;
+    longitude: number;
+    roadName: string;
+    city: string;
+    state: string;
+    pincode: string;
   };
 
   @Prop({
     type: {
-      hours: Number,
-      minute: Number
+      startTime: {
+        hours: Number,
+        minute: Number,
+      },
+      endTime: {
+        hours: Number,
+        minute: Number,
+      },
     },
     default: {
-      hours: null,
-      minute: null
-    }
+      startTime: {
+        hours: null,
+        minute: null,
+      },
+      endTime: {
+        hours: null,
+        minute: null,
+      },
+    },
   })
-  mentorshipTime: {
-    hours: number
-    minute: number
-  }
+  availabilityTime: {
+    startTime: {
+      hours: number;
+      minute: number;
+    };
+    endTime: {
+      hours: number;
+      minute: number;
+    };
+  };
 
   @Prop({ type: Date, default: new Date() })
   createdAt: Date;

@@ -6,6 +6,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { ConfigModule } from "@nestjs/config";
 import { get_mongo_connection } from '@configs/dbConfig';
 import { DATABASE_NAME } from './constants';
+import { CommonModule } from '@modules/common/common.module';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { DATABASE_NAME } from './constants';
       connectionName: DATABASE_NAME,
       authSource: 'admin',
     }),
+    CommonModule,
     MentorModule,
     MenteeModule,
     UtilsModule
