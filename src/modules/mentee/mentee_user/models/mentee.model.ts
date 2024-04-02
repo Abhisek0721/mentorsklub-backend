@@ -6,7 +6,7 @@ import { Document } from 'mongoose';
 @Schema({ timestamps: true })
 export class Mentee extends Document {
   @Prop({ type: 'ObjectId', ref: 'User', unique: true, required: true })
-  userId: User;
+  user: User;
 
   @Prop({ type: [String], default: [], required: true  })
   fieldOnInterests: MentorshipField[];

@@ -11,7 +11,7 @@ import { MenteeUsersModule } from './mentee_user/menteeUsers.module';
         path: 'mentee',
         children: [
           {
-            path: 'users',
+            path: 'user',
             module: MenteeUsersModule,
           },
         ],

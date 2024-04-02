@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, Provider } from '@nestjs/common';
 import { MentorUsersModule } from './mentor_user/mentorUsers.module';
 import { RouterModule } from '@nestjs/core';
 
@@ -10,7 +10,7 @@ import { RouterModule } from '@nestjs/core';
         path: 'mentor',
         children: [
           {
-            path: 'users',
+            path: 'user',
             module: MentorUsersModule,
           }
         ],

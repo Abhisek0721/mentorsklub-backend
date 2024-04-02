@@ -6,10 +6,13 @@ import { Document } from 'mongoose';
 @Schema({ timestamps: true })
 export class Mentor extends Document {
   @Prop({ type: 'ObjectId', ref: 'User', unique: true, required: true })
-  userId: User;
+  user: User;
 
-  @Prop({ type: String, enum: MentorshipField, default: null, required: true })
+  @Prop({ type: String, enum: MentorshipField, default: MentorshipField.Other, required: true })
   field: MentorshipField;
+
+  @Prop({ type: String, default: "" })
+  teaches: String;
 
   @Prop({
     type: {
