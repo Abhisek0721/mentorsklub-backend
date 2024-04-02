@@ -7,7 +7,7 @@ import { User } from '@modules/common/users/models/users.model';
 import { InjectModel } from '@nestjs/mongoose';
 import { DATABASE_NAME } from '@constants/index';
 import { Model } from 'mongoose';
-
+import { ValidateType } from '../types/validate.type';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
@@ -21,23 +21,21 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   }
 
   async validateUser(payload: JwtPayload): Promise<User | null> {
-    const user = await this.userModel.findOne(
-      {
-        _id: payload.userId,
-        email: payload.email
-      }
-    );
+    const user = await this.userModel.findOne({
+      _id: payload.userId,
+      email: payload.email,
+    });
     if (user) {
       return user;
     }
     return null;
   }
 
-  async validate(payload: JwtPayload): Promise<any> {
+  async validate(payload: JwtPayload): Promise<ValidateType> {
     const user = await this.validateUser(payload);
     if (!user) {
       throw new UnauthorizedException();
     }
-    return user;
+    return { userId: user._id, email: user.email, role: user.role };
   }
 }

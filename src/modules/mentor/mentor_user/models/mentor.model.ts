@@ -3,7 +3,7 @@ import { User } from '@modules/common/users/models/users.model';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 
-@Schema()
+@Schema({ timestamps: true })
 export class Mentor extends Document {
   @Prop({ type: 'ObjectId', ref: 'User', unique: true, required: true })
   userId: User;
@@ -70,12 +70,6 @@ export class Mentor extends Document {
       minute: number;
     };
   };
-
-  @Prop({ type: Date, default: new Date() })
-  createdAt: Date;
-
-  @Prop({ type: Date, default: new Date() })
-  updatedAt: Date;
 }
 
 export const MentorSchema = SchemaFactory.createForClass(Mentor);
