@@ -4,6 +4,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { User, UserSchema } from './models/users.model';
 import { Mentor, MentorSchema } from '@modules/mentor/mentor_user/models/mentor.model';
 import { DATABASE_NAME } from '@constants/index';
+import { UserController } from './controllers/user.controller';
 
 
 @Module({
@@ -16,7 +17,7 @@ import { DATABASE_NAME } from '@constants/index';
       DATABASE_NAME
     ),
   ],
-  controllers: [],
+  controllers: [UserController],
   providers: [UserService],
   // exports: [UserService]
 })
