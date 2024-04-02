@@ -72,6 +72,7 @@ export class UserService {
         {
           fullName: editUserDto.fullName,
           phoneNumber: editUserDto.phoneNumber,
+          location: editUserDto.location
         },
         { new: true },
       )

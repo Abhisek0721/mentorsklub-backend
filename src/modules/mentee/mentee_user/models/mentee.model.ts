@@ -10,33 +10,6 @@ export class Mentee extends Document {
 
   @Prop({ type: [String], default: [], required: true  })
   fieldOnInterests: MentorshipField[];
-
-  @Prop({
-    type: {
-      latitude: Number,
-      longitude: Number,
-      roadName: String,
-      city: String,
-      state: String,
-      pincode: String
-    },
-    default: {
-      latitude: null,
-      longitude: null,
-      roadName: "",
-      city: "",
-      state: "",
-      pincode: ""
-    }
-  })
-  location: {
-    latitude: number,
-    longitude: number,
-    roadName: string,
-    city: string,
-    state: string,
-    pincode: string
-  };
 }
 
 export const MenteeSchema = SchemaFactory.createForClass(Mentee);
