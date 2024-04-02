@@ -5,7 +5,7 @@ export type ApiResponseT = {
     errors:     any | null
 }
 
-export type Page = {
+export type PageT = {
     previous:   number
     current:    number
     next:       number
@@ -22,5 +22,5 @@ export type PaginatedApiResponse = {
     data:       object
     code:       string | null
     errors:     any | null
-    page:       Page
+    page:       PageT
 }
