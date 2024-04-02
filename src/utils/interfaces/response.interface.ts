@@ -1,4 +1,4 @@
-import { Page as PageT } from "../types"
+import { PageT } from "../types"
 
 export interface ApiResponse {
     message:    string

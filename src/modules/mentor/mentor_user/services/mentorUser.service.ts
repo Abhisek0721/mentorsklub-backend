@@ -1,4 +1,4 @@
-import { DATABASE_NAME } from '@constants/index';
+import { DATABASE_NAME, ROLES } from '@constants/index';
 import { User } from '@modules/common/users/models/users.model';
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
@@ -23,5 +23,37 @@ export class MentorUserService {
       })
       .lean();
     return mentorData;
+  }
+
+  async getAllMentorData(pageNumber: number, limit: number) {
+    if (!pageNumber || pageNumber < 0) {
+      pageNumber = 1;
+    }
+    if (!limit || limit < 1) {
+      limit = 10;
+    }
+    const mentorCount = await this.userModel.countDocuments({
+      role: ROLES.MENTOR,
+    });
+    let totalPages = (mentorCount / limit) | 0;
+    if(totalPages<(mentorCount/limit)) {
+      totalPages = totalPages+1;
+    }
+    const skipFrom = (pageNumber-1)*limit;
+    const mentorData = await this.mentorModel
+      .find()
+      .populate({
+        path: 'user',
+        select: '-password -createdAt -updatedAt',
+      })
+      .limit(limit)
+      .skip(skipFrom)
+      .lean();
+    return {
+      data: mentorData,
+      totalData: mentorCount,
+      totalPages: totalPages,
+      currentPage: pageNumber,
+    };
   }
 }
