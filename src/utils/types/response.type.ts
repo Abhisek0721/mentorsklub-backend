@@ -1,4 +1,4 @@
-export type ApiResponse = {
+export type ApiResponseT = {
     message:    string
     data:       object
     code:       string | null

@@ -3,7 +3,7 @@ import {
   ApiResponse as ApiResponseInterface,
   PaginatedApiResponse as PaginatedApiResponseInterface,
 } from './interfaces';
-import { ApiResponse, PaginatedApiResponse, Page as PageT } from './types';
+import { ApiResponseT, PaginatedApiResponse, Page as PageT } from './types';
 
 export class BadRequestError extends Error {
   message: string;
@@ -112,7 +112,7 @@ export class ApiUtilsService {
     message: string = 'Successful',
     code: string | null = null,
     errors: string | null = null,
-  ): ApiResponse {
+  ): ApiResponseT {
     /**
      * Response Builder utility
      */

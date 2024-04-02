@@ -2,13 +2,15 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { urlencoded } from 'express';
 import { ValidationPipe } from '@nestjs/common';
-import { Request, Response } from 'express';
-import ConstantEnv from './constants';
+import { BadRequestErrorFilter, HttpExceptionFilter } from './filters';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.enableCors();
   app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
+  // for error handeling on receiving request
+  app.useGlobalFilters(new HttpExceptionFilter());
+  app.useGlobalFilters(new BadRequestErrorFilter());
   app.use(urlencoded({ limit: '200mb', extended: true }));
 
   // Increase multipart file upload limit to 10MB
@@ -22,7 +24,7 @@ async function bootstrap() {
   app.setGlobalPrefix('/api');
   app.enableShutdownHooks();
 
-  await app.listen(ConstantEnv.PORT, '0.0.0.0', async () => {
+  await app.listen(process.env.PORT, '0.0.0.0', async () => {
     console.log(`Backend URL: ${await app.getUrl()}`);
   });
 }

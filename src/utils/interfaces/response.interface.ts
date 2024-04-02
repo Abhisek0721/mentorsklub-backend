@@ -5,7 +5,6 @@ export interface ApiResponse {
     data:       object
     code:       string | null
     errors:     any | null
-
 }
 
 export interface Page {
