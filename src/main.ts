@@ -2,7 +2,12 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { urlencoded } from 'express';
 import { ValidationPipe } from '@nestjs/common';
-import { BadRequestErrorFilter, HttpExceptionFilter } from './filters';
+import {
+  BadRequestErrorFilter,
+  ForbiddenExceptionFilter,
+  HttpExceptionFilter,
+  UnauthorizedExceptionFilter,
+} from './filters';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -11,6 +16,9 @@ async function bootstrap() {
   // for error handeling on receiving request
   app.useGlobalFilters(new HttpExceptionFilter());
   app.useGlobalFilters(new BadRequestErrorFilter());
+  app.useGlobalFilters(new ForbiddenExceptionFilter());
+  app.useGlobalFilters(new UnauthorizedExceptionFilter());
+
   app.use(urlencoded({ limit: '200mb', extended: true }));
 
   // Increase multipart file upload limit to 10MB
