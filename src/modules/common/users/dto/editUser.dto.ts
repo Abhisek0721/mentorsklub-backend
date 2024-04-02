@@ -1,27 +1,21 @@
-import { IsObject, IsOptional, IsString } from 'class-validator';
+import { IsObject, IsOptional, IsString, IsNumber } from 'class-validator';
 
 class LocationDTO {
-  @IsOptional()
-  @IsString()
+  @IsNumber()
   latitude: number;
 
-  @IsOptional()
-  @IsString()
+  @IsNumber()
   longitude: number;
 
-  @IsOptional()
   @IsString()
   roadName: string;
 
-  @IsOptional()
   @IsString()
   city: string;
 
-  @IsOptional()
   @IsString()
   state: string;
 
-  @IsOptional()
   @IsString()
   pincode: string;
 }
