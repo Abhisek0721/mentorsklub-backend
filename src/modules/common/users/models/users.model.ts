@@ -76,7 +76,9 @@ UserSchema.pre('save', async function (this:User, next:NextFunction) {
     if (existingMentor) {
       return next();
     }
-    await mentorModel.create({ user: this._id, field: MentorshipField.Other });
+    const mentorProfileModel = this.model("MentorProfile");
+    const mentor = await mentorModel.create({ user: this._id, field: MentorshipField.Other });
+    await mentorProfileModel.create({ user: this._id, mentor: mentor._id });
     return next();
   } catch (error) {
     return next(error);

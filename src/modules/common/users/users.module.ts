@@ -5,6 +5,7 @@ import { User, UserSchema } from './models/users.model';
 import { Mentor, MentorSchema } from '@modules/mentor/mentor_user/models/mentor.model';
 import { DATABASE_NAME } from '@constants/index';
 import { UserController } from './controllers/user.controller';
+import { MentorProfile, MentorProfileSchema } from '@modules/mentor/mentor_user/models/mentorProfile.model';
 
 
 @Module({
@@ -13,6 +14,7 @@ import { UserController } from './controllers/user.controller';
       [
         { name: User.name, schema: UserSchema },
         { name: Mentor.name, schema: MentorSchema },
+        { name: MentorProfile.name, schema: MentorProfileSchema }
       ],
       DATABASE_NAME
     ),
