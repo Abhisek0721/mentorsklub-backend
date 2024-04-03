@@ -1,4 +1,13 @@
-import { Controller, Get, Query, Req, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Patch,
+  Put,
+  Query,
+  Req,
+  UseGuards,
+} from '@nestjs/common';
 import { MentorUserService } from '@modules/mentor/mentor_user/services/mentorUser.service';
 import { ApiPageUtils, ApiUtilsService } from '@utils/utils.service';
 import { JwtAuthGuard } from '@modules/common/auth/services/jwt.auth.guard';
@@ -7,6 +16,8 @@ import { ApiResponseT, PageT } from '@utils/types';
 import { Roles } from '@modules/common/auth/decorators/role.decorator';
 import { RoleGuard } from '@modules/common/auth/services/role.guard';
 import { ROLES } from '@constants/index';
+import { AvailabilityTimeDTO, MentorDTO } from '../dto/mentor.dto';
+import { Mentor } from '../models/mentor.model';
 
 @Controller()
 export class MentorUserController {
@@ -35,7 +46,7 @@ export class MentorUserController {
       Number(pageNumber),
       Number(limit),
     );
-    const pageData:PageT = ApiPageUtils.getPageData({
+    const pageData: PageT = ApiPageUtils.getPageData({
       currentPage: data.currentPage,
       totalData: data.totalData,
       totalPages: data.totalPages,
@@ -45,5 +56,35 @@ export class MentorUserController {
       page: pageData,
     });
     return response;
+  }
+
+  @Put('/updateMentor')
+  @UseGuards(JwtAuthGuard, RoleGuard)
+  @Roles(ROLES.MENTOR)
+  async updateMentor(
+    @Req() req: IAuthRequest,
+    @Body() mentorDto: MentorDTO,
+  ): Promise<ApiResponseT> {
+    const userId = req.user.userId;
+    const data: Mentor = await this.mentorUserService.updateMentor(
+      userId,
+      mentorDto,
+    );
+    return this.apiUtils.make_response(data);
+  }
+
+  @Patch('/updateAvailabilityTime')
+  @UseGuards(JwtAuthGuard, RoleGuard)
+  @Roles(ROLES.MENTOR)
+  async updateAvailabilityTime(
+    @Req() req: IAuthRequest,
+    @Body() availabilityTime: AvailabilityTimeDTO,
+  ): Promise<ApiResponseT> {
+    const userId = req.user.userId;
+    const data: Mentor = await this.mentorUserService.updateAvailabilityTime(
+      userId,
+      availabilityTime,
+    );
+    return this.apiUtils.make_response(data);
   }
 }

@@ -63,7 +63,7 @@ UserSchema.pre('save', async function (this:User, next:NextFunction) {
     // if role is mentee, create mentee document
     if(this.role === ROLES.MENTEE) {
       const menteeModel = this.model("Mentee");
-      const existingMentor = await menteeModel.findOne({ user: this._id });
+      const existingMentor = await menteeModel.exists({ user: this._id });
       if (existingMentor) {
         return next();
       }
@@ -72,7 +72,7 @@ UserSchema.pre('save', async function (this:User, next:NextFunction) {
     }
     // else create mentor document
     const mentorModel = this.model("Mentor");
-    const existingMentor = await mentorModel.findOne({ user: this._id });
+    const existingMentor = await mentorModel.exists({ user: this._id });
     if (existingMentor) {
       return next();
     }
