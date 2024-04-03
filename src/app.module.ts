@@ -7,6 +7,7 @@ import { ConfigModule } from "@nestjs/config";
 import { get_mongo_connection } from '@configs/dbConfig';
 import { DATABASE_NAME } from './constants';
 import { CommonModule } from '@modules/common/common.module';
+import { AppController } from './app.controller';
 
 @Module({
   imports: [
@@ -20,7 +21,7 @@ import { CommonModule } from '@modules/common/common.module';
     MenteeModule,
     UtilsModule
   ],
-  controllers: [],
+  controllers: [AppController],
   providers: [],
 })
 export class AppModule {}
