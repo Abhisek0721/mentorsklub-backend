@@ -24,12 +24,7 @@ async function bootstrap() {
   // Increase multipart file upload limit to 10MB
   // app.use(json({ limit: '200mb' }));
 
-  // Return "<h1> Running on port 3000 </h1>" for the root route
-  // app.use('/', (req: Request, res: Response) => {
-  //   res.send(`<h1> Running on port: ${ConstantEnv.PORT} </h1>`);
-  // });
-
-  app.setGlobalPrefix('/api');
+  app.setGlobalPrefix('/api', { exclude: ['/'] });
   app.enableShutdownHooks();
 
   await app.listen(process.env.PORT, '0.0.0.0', async () => {
