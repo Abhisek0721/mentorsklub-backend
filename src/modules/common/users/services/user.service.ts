@@ -15,7 +15,7 @@ export class UserService {
 
   async userExist(email: string): Promise<boolean> {
     const isUser = await this.userModel.exists({
-      email: email,
+      email: email.toLowerCase(),
     });
     if (isUser) {
       return true;
