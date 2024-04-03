@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   Get,
+  Param,
   Patch,
   Put,
   Query,
@@ -16,8 +17,13 @@ import { ApiResponseT, PageT } from '@utils/types';
 import { Roles } from '@modules/common/auth/decorators/role.decorator';
 import { RoleGuard } from '@modules/common/auth/services/role.guard';
 import { ROLES } from '@constants/index';
-import { AvailabilityTimeDTO, MentorDTO } from '../dto/mentor.dto';
+import {
+  AvailabilityTimeDTO,
+  MentorDTO,
+  MentorProfileDTO,
+} from '../dto/mentor.dto';
 import { Mentor } from '../models/mentor.model';
+import { MentorProfile } from '../models/mentorProfile.model';
 
 @Controller()
 export class MentorUserController {
@@ -32,6 +38,16 @@ export class MentorUserController {
   async getMentor(@Req() req: IAuthRequest): Promise<ApiResponseT> {
     const userId = req.user.userId;
     const mentorData = await this.mentorUserService.getMentorData(userId);
+    const response: ApiResponseT = this.apiUtils.make_response(mentorData);
+    return response;
+  }
+
+  @Get('/mentorProfile')
+  @UseGuards(JwtAuthGuard, RoleGuard)
+  @Roles(ROLES.MENTOR)
+  async getMentorProfile(@Req() req: IAuthRequest): Promise<ApiResponseT> {
+    const userId = req.user.userId;
+    const mentorData = await this.mentorUserService.getMentorPrfile(userId);
     const response: ApiResponseT = this.apiUtils.make_response(mentorData);
     return response;
   }
@@ -85,6 +101,24 @@ export class MentorUserController {
       userId,
       availabilityTime,
     );
+    return this.apiUtils.make_response(data);
+  }
+
+  @Put('/updateMentorProfile/:mentorId')
+  @UseGuards(JwtAuthGuard, RoleGuard)
+  @Roles(ROLES.MENTOR)
+  async updateMentorProfile(
+    @Req() req: IAuthRequest,
+    @Param('mentorId') mentorId: string,
+    @Body() mentorProfileDto: MentorProfileDTO,
+  ): Promise<ApiResponseT> {
+    const userId = req.user.userId;
+    const data: MentorProfile =
+      await this.mentorUserService.updateMentorProfile(
+        userId,
+        mentorId,
+        mentorProfileDto,
+      );
     return this.apiUtils.make_response(data);
   }
 }

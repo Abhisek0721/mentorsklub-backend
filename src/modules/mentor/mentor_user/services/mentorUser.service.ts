@@ -4,13 +4,20 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { Mentor } from '../models/mentor.model';
-import { AvailabilityTimeDTO, MentorDTO } from '../dto/mentor.dto';
+import {
+  AvailabilityTimeDTO,
+  MentorDTO,
+  MentorProfileDTO,
+} from '../dto/mentor.dto';
+import { MentorProfile } from '../models/mentorProfile.model';
 
 @Injectable()
 export class MentorUserService {
   constructor(
     @InjectModel(User.name, DATABASE_NAME) private userModel: Model<User>,
     @InjectModel(Mentor.name, DATABASE_NAME) private mentorModel: Model<Mentor>,
+    @InjectModel(MentorProfile.name, DATABASE_NAME)
+    private mentorProfileModel: Model<MentorProfile>,
   ) {}
 
   async getMentorData(userId: string | Types.ObjectId) {
@@ -23,6 +30,27 @@ export class MentorUserService {
         select: '-password -createdAt -updatedAt',
       })
       .lean();
+    return mentorData;
+  }
+
+  async getMentorPrfile(userId: string | Types.ObjectId) {
+    let mentorData = await this.mentorProfileModel
+      .findOne({
+        user: userId,
+      })
+      .populate({
+        path: 'user mentor',
+        select: '-password -createdAt -updatedAt',
+      })
+      .lean();
+    // if mentorProfile data is null, then create it
+    if (!mentorData) {
+      const mentor = await this.mentorModel.findOne({ user: userId });
+      mentorData = await this.mentorProfileModel.create({
+        user: userId,
+        mentor: mentor._id,
+      });
+    }
     return mentorData;
   }
 
@@ -90,5 +118,26 @@ export class MentorUserService {
       { new: true },
     );
     return updatedData;
+  }
+
+  async updateMentorProfile(
+    userId: string | Types.ObjectId,
+    mentorId: string,
+    mentorProfileDto: MentorProfileDTO,
+  ):Promise<MentorProfile> {
+    const mentorProfile = this.mentorProfileModel.findOneAndUpdate(
+      {
+        user: userId,
+        mentor: mentorId
+      },
+      {
+        $set: mentorProfileDto
+      },
+      {
+        new: true,
+        upsert: true
+      }
+    );
+    return mentorProfile;
   }
 }
