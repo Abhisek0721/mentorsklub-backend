@@ -4,6 +4,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { Mentor } from '../models/mentor.model';
+import { AvailabilityTimeDTO, MentorDTO } from '../dto/mentor.dto';
 
 @Injectable()
 export class MentorUserService {
@@ -36,10 +37,10 @@ export class MentorUserService {
       role: ROLES.MENTOR,
     });
     let totalPages = (mentorCount / limit) | 0;
-    if(totalPages<(mentorCount/limit)) {
-      totalPages = totalPages+1;
+    if (totalPages < mentorCount / limit) {
+      totalPages = totalPages + 1;
     }
-    const skipFrom = (pageNumber-1)*limit;
+    const skipFrom = (pageNumber - 1) * limit;
     const mentorData = await this.mentorModel
       .find()
       .populate({
@@ -55,5 +56,39 @@ export class MentorUserService {
       totalPages: totalPages,
       currentPage: pageNumber,
     };
+  }
+
+  async updateMentor(
+    userId: string | Types.ObjectId,
+    mentorDto: MentorDTO,
+  ): Promise<Mentor> {
+    const updatedData: Mentor = await this.mentorModel.findOneAndUpdate(
+      {
+        user: userId,
+      },
+      {
+        $set: mentorDto,
+      },
+      { new: true },
+    );
+    return updatedData;
+  }
+
+  async updateAvailabilityTime(
+    userId: string | Types.ObjectId,
+    availabilityTime: AvailabilityTimeDTO,
+  ): Promise<Mentor> {
+    const updatedData: Mentor = await this.mentorModel.findOneAndUpdate(
+      {
+        user: userId,
+      },
+      {
+        $set: {
+          availabilityTime: availabilityTime,
+        },
+      },
+      { new: true },
+    );
+    return updatedData;
   }
 }
