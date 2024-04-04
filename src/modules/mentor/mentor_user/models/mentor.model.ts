@@ -2,16 +2,22 @@ import { MentorshipField } from '@constants/index';
 import { User } from '@modules/common/users/models/users.model';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
+import { ZoomTokenType } from '../types/zoomTokensType';
 
 @Schema({ timestamps: true })
 export class Mentor extends Document {
   @Prop({ type: 'ObjectId', ref: 'User', unique: true, required: true })
   user: User;
 
-  @Prop({ type: String, enum: MentorshipField, default: MentorshipField.Other, required: true })
+  @Prop({
+    type: String,
+    enum: MentorshipField,
+    default: MentorshipField.Other,
+    required: true,
+  })
   field: MentorshipField;
 
-  @Prop({ type: String, default: "" })
+  @Prop({ type: String, default: '' })
   teaches: String;
 
   @Prop({
@@ -46,6 +52,18 @@ export class Mentor extends Document {
       minute: number;
     };
   };
+
+  @Prop({
+    type: {
+      accessToken: String,
+      refreshToken: String,
+    },
+    default: {
+      accessToken: '',
+      refreshToken: '',
+    },
+  })
+  zoomTokens: ZoomTokenType;
 }
 
 export const MentorSchema = SchemaFactory.createForClass(Mentor);
