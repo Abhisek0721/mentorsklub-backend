@@ -1,13 +1,12 @@
 import { DATABASE_NAME } from '@constants/index';
-import { User } from '@modules/common/users/models/users.model';
-import { Mentee } from '@modules/mentee/mentee_user/models/mentee.model';
 import { Mentor } from '@modules/mentor/mentor_user/models/mentor.model';
-import { Injectable } from '@nestjs/common';
+import { ForbiddenException, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import axios from 'axios';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import * as querystring from 'querystring';
 import { ZoomCallbackType } from '../types/zoomCallbackResponse.type';
+import { CreateMeetLinkType } from '../types/createMeetLinkResponse.type';
 
 @Injectable()
 export class ZoomService {
@@ -62,10 +61,13 @@ export class ZoomService {
         { headers },
       );
       const { access_token, refresh_token } = response.data;
+      const tokenExpiresAt = Date.now() + response.data.expires_in * 1000;
+      // Convert expires_in to milliseconds
       return {
         userId,
         access_token,
         refresh_token,
+        tokenExpiresAt,
       };
     } catch (error) {
       console.error('Failed to exchange code for token:', error.response.data);
@@ -82,6 +84,7 @@ export class ZoomService {
         $set: {
           'zoomTokens.accessToken': zoomTokens.access_token,
           'zoomTokens.refreshToken': zoomTokens.refresh_token,
+          'zoomTokens.tokenExpiresAt': zoomTokens.tokenExpiresAt,
         },
       },
       {
@@ -89,5 +92,105 @@ export class ZoomService {
       },
     );
     return mentor;
+  }
+
+  // Function to refresh access token
+  async refreshToken(
+    userId: string | Types.ObjectId,
+    refreshToken: string,
+  ): Promise<string> {
+    const params = {
+      grant_type: 'refresh_token',
+      refresh_token: refreshToken,
+    };
+    const headers = {
+      Authorization: `Basic ${Buffer.from(`${this.clientId}:${this.clientSecret}`).toString('base64')}`,
+    };
+
+    try {
+      const response = await axios.post(
+        this.tokenUrl,
+        querystring.stringify(params),
+        { headers },
+      );
+      const accessToken = response.data.access_token;
+      refreshToken = response.data.refresh_token;
+      const tokenExpiresAt = Date.now() + response.data.expires_in * 1000; // Convert expires_in to milliseconds
+      const mentor = await this.mentorModel
+        .findOneAndUpdate(
+          {
+            user: userId,
+          },
+          {
+            $set: {
+              'zoomTokens.accessToken': accessToken,
+              'zoomTokens.refreshToken': refreshToken,
+              'zoomTokens.tokenExpiresAt': tokenExpiresAt,
+            },
+          },
+        )
+        .select('zoomTokens');
+      return mentor.zoomTokens.accessToken;
+    } catch (error) {
+      console.error('Failed to refresh token:', error.response.data);
+      throw error;
+    }
+  }
+
+  async createZoomMeetingLink(
+    userId: string | Types.ObjectId,
+    meetTopic: string,
+    startTime: Date,
+    durationInMinute: number = 40,
+  ): Promise<CreateMeetLinkType> {
+    try {
+      const mentor = await this.mentorModel
+        .findOne({
+          user: userId,
+        })
+        .select('_id zoomTokens');
+
+      if (!mentor?.zoomTokens?.refreshToken) {
+        throw new ForbiddenException('You are not authorized to zoom yet.');
+      }
+      let accessToken = mentor.zoomTokens.accessToken;
+      if (!accessToken || new Date() >= mentor.zoomTokens.tokenExpiresAt) {
+        accessToken = await this.refreshToken(
+          userId,
+          mentor.zoomTokens.refreshToken,
+        );
+      }
+      // Create a Zoom meeting
+      const meetingParams = {
+        topic: meetTopic,
+        type: 2, // Scheduled meeting
+        settings: {
+          join_before_host: true,
+          approval_type: 0, // "automatically approve" or "no registration required"
+          registration_type: 0, //  join without registration
+        },
+        duration: durationInMinute, // Meeting duration in minutes
+        // timezone: 'Asia/Kolkata', // Set the timezone for the meeting
+        start_time: startTime,
+      };
+      const meetingHeaders = {
+        Authorization: `Bearer ${accessToken}`,
+      };
+      const meetingResponse = await axios.post(
+        this.createMeetingUrl,
+        meetingParams,
+        {
+          headers: meetingHeaders,
+        },
+      );
+      const { join_url } = meetingResponse.data;
+      return {
+        mentorId: mentor._id,
+        join_url: join_url,
+      };
+    } catch (error) {
+      console.error('Error in createZoomMeetLink:', error?.response?.data);
+      throw error;
+    }
   }
 }
