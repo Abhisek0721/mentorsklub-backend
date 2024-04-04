@@ -174,9 +174,11 @@ export class ApiPageUtils {
     currentPage: number;
     totalPages: number;
   }): PageT {
-    const { totalData, currentPage, totalPages } = options;
-    let next: number | null = currentPage + 1;
-    let previous: number | null = currentPage - 1;
+    const totalData = Number(options.totalData);
+    const currentPage = Number(options.currentPage);
+    const totalPages = Number(options.totalPages)
+    let next: number | null = Number(currentPage) + 1;
+    let previous: number | null = Number(currentPage) - 1;
 
     if (currentPage === totalPages) {
       next = null;

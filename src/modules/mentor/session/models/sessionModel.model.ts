@@ -21,7 +21,10 @@ export class SessionMeet extends Document {
   @Prop({ type: Date, required: true })
   startTime: Date;
 
-  @Prop({ type: Number, default: 40})
+  @Prop({ type: Date, required: true })
+  endTime: Date;
+
+  @Prop({ type: Number, default: 40 })
   durationInMinute: number;
 
   @Prop({ type: String, required: true })
@@ -29,3 +32,9 @@ export class SessionMeet extends Document {
 }
 
 export const SessionMeetSchema = SchemaFactory.createForClass(SessionMeet);
+
+// SessionMeetSchema.virtual('endTime').get(function ():Date {
+//   const endTime = new Date(this.startTime);
+//   endTime.setMinutes(endTime.getMinutes() + this.durationInMinute);
+//   return endTime;
+// });
