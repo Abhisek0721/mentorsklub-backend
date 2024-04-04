@@ -26,5 +26,6 @@ import { DATABASE_NAME } from '@constants/index';
   ],
   controllers: [ZoomController],
   providers: [ZoomService],
+  exports: [ZoomService]
 })
 export class ZoomModule {}

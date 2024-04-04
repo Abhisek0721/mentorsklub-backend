@@ -39,3 +39,5 @@ export enum MentorshipField {
   Sports = "Sports",
   Other = "Other"
 }
+
+import { MeetingPlatform } from "./meetingPlatform.enum";

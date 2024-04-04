@@ -57,10 +57,12 @@ export class Mentor extends Document {
     type: {
       accessToken: String,
       refreshToken: String,
+      tokenExpiresAt: Date
     },
     default: {
       accessToken: '',
       refreshToken: '',
+      tokenExpiresAt: null
     },
   })
   zoomTokens: ZoomTokenType;
