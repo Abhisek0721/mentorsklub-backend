@@ -8,6 +8,7 @@ import { get_mongo_connection } from '@configs/dbConfig';
 import { DATABASE_NAME } from './constants';
 import { CommonModule } from '@modules/common/common.module';
 import { AppController } from './app.controller';
+import { ZoomModule } from '@modules/zoom/zoom.module';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { AppController } from './app.controller';
     CommonModule,
     MentorModule,
     MenteeModule,
+    ZoomModule,
     UtilsModule
   ],
   controllers: [AppController],
