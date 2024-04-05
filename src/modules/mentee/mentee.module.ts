@@ -6,6 +6,7 @@ import { SubscriptionModule } from './subscription/subscription.module';
 @Module({
   imports: [
     MenteeUsersModule,
+    SubscriptionModule,
     RouterModule.register([
       {
         path: 'mentee',
