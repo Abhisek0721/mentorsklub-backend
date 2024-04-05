@@ -109,13 +109,19 @@ export class SubscriptionController {
     return this.apiUtils.make_paginated_response({ data, page });
   }
 
-  @Get('subscription-status')
+  @Get('subscription-status/:mentorId')
   @UseGuards(JwtAuthGuard, RoleGuard)
   @Roles(ROLES.MENTEE)
-  async getSubscriptionStatus(@Req() req: IAuthRequest): Promise<ApiResponseT> {
+  async getSubscriptionStatusOfMentor(
+    @Req() req: IAuthRequest,
+    @Param('mentorId') mentorId: string,
+  ): Promise<ApiResponseT> {
     const menteeUserId = req.user.userId;
     const subscriptionStatus: SubscriptionStatusType =
-      await this.subscriptionService.getSubscriptionStatus(menteeUserId);
+      await this.subscriptionService.getSubscriptionStatus(
+        menteeUserId,
+        mentorId,
+      );
     const response: ApiResponseT =
       this.apiUtils.make_response(subscriptionStatus);
     return response;

@@ -214,9 +214,11 @@ export class SubscriptionService {
 
   async getSubscriptionStatus(
     menteeUserId: string | Types.ObjectId,
+    mentorId: string
   ): Promise<SubscriptionStatusType> {
     const checkSubscription = await this.subscriptionModel.exists({
       menteeUser: menteeUserId,
+      mentor: new Types.ObjectId(mentorId)
     });
     if (checkSubscription) {
       return {
