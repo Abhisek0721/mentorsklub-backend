@@ -1,10 +1,10 @@
-import { HttpStatus, Injectable } from '@nestjs/common';
+import { BadRequestException, HttpStatus, Injectable } from '@nestjs/common';
 import {
   ApiResponse as ApiResponseInterface,
   PaginatedApiResponse as PaginatedApiResponseInterface,
 } from './interfaces';
 import { ApiResponseT, PaginatedApiResponse, PageT } from './types';
-import { UpdateWriteOpResult } from 'mongoose';
+import { Types, UpdateWriteOpResult } from 'mongoose';
 
 export class BadRequestError extends Error {
   message: string;
@@ -108,8 +108,8 @@ class PaginatedResponse implements PaginatedApiResponseInterface {
 export class ApiUtilsService {
   constructor() {}
 
-  getDataUpdateMessage(subscribeUpdate: UpdateWriteOpResult):string {
-    let message:string;
+  getDataUpdateMessage(subscribeUpdate: UpdateWriteOpResult): string {
+    let message: string;
     if (subscribeUpdate.modifiedCount > 0) {
       message = 'Updated Successfully';
     } else if (subscribeUpdate.upsertedId) {
@@ -212,5 +212,18 @@ export class ApiPageUtils {
       },
     };
     return output;
+  }
+}
+
+export class ValidateDataUtils {
+  public static validateObjectIdString(
+    objectIdString: string,
+    fieldName: string = 'ObjectId',
+  ) {
+    try {
+      new Types.ObjectId(objectIdString);
+    } catch (error) {
+      throw new BadRequestException(`Invalid ${fieldName}`);
+    }
   }
 }
