@@ -25,5 +25,6 @@ import { SubscriptionModule } from './subscription/subscription.module';
   ],
   controllers: [],
   providers: [],
+  exports: []
 })
 export class MenteeModule {}

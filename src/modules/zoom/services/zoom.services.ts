@@ -128,6 +128,9 @@ export class ZoomService {
               'zoomTokens.tokenExpiresAt': tokenExpiresAt,
             },
           },
+          {
+            new: true
+          }
         )
         .select('zoomTokens');
       return mentor.zoomTokens.accessToken;
