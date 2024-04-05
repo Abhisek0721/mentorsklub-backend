@@ -6,6 +6,7 @@ import { Model, Types } from 'mongoose';
 import { Message } from '../models/message.model';
 import { SendMessageDTO } from '../dto/sendMessage.dto';
 import { ValidateDataUtils } from '@utils/utils.service';
+import { EditMessageDTO } from '../dto/editMessage.dto';
 
 @Injectable()
 export class MessageService {
@@ -38,6 +39,29 @@ export class MessageService {
       replyTo: sendMessageDto.replyTo,
     });
     return messageSent;
+  }
+
+  async editMessage(
+    senderUserId: string | Types.ObjectId,
+    editMessageDto: EditMessageDTO,
+  ): Promise<Message> {
+    ValidateDataUtils.validateObjectIdString(editMessageDto.messageId, 'messageId');
+    const message = await this.messageModel.findOneAndUpdate(
+      {
+        _id: editMessageDto.messageId,
+        sender: senderUserId,
+      },
+      {
+        content: editMessageDto.content,
+      },
+      { new: true },
+    );
+    if(!message) {
+      throw new BadRequestException(
+        `Message with messageId ${editMessageDto.messageId} doesn't exist`
+      );
+    }
+    return message;
   }
 
   async getMessagesOfSender(
@@ -96,5 +120,19 @@ export class MessageService {
       .exec();
 
     return users;
+  }
+
+  async deleteMessage(
+    senderUserId: string | Types.ObjectId,
+    messageId: string
+  ) {
+    ValidateDataUtils.validateObjectIdString(messageId, 'messageId');
+    const messageDelete = await this.messageModel.deleteOne(
+      {
+        _id: new Types.ObjectId(messageId),
+        sender: senderUserId,
+      }
+    );
+    return messageDelete;
   }
 }
