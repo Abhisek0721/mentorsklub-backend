@@ -17,6 +17,7 @@ import { Roles } from '@modules/common/auth/decorators/role.decorator';
 import { ROLES } from '@constants/index';
 import { UpdateWriteOpResult } from 'mongoose';
 import { ApiResponseT, PageT } from '@utils/types';
+import { SubscriptionStatusType } from '../types/subscriptionStatus.type';
 
 @Controller()
 export class SubscriptionController {
@@ -90,7 +91,6 @@ export class SubscriptionController {
     return this.apiUtils.make_paginated_response({ data, page });
   }
 
-
   @Get('all-subscribed-mentors')
   @UseGuards(JwtAuthGuard, RoleGuard)
   @Roles(ROLES.MENTEE)
@@ -98,7 +98,7 @@ export class SubscriptionController {
     @Req() req: IAuthRequest,
     @Query('pageNumber') pageNumber: number,
     @Query('limit') limit: number,
-  ):Promise<ApiResponseT> {
+  ): Promise<ApiResponseT> {
     const menteeUserId = req.user.userId;
     const data = await this.subscriptionService.getAllSubscribedMentors(
       menteeUserId,
@@ -107,5 +107,23 @@ export class SubscriptionController {
     );
     const page: PageT = ApiPageUtils.getPageData(data);
     return this.apiUtils.make_paginated_response({ data, page });
+  }
+
+  @Get('subscription-status/:mentorId')
+  @UseGuards(JwtAuthGuard, RoleGuard)
+  @Roles(ROLES.MENTEE)
+  async getSubscriptionStatusOfMentor(
+    @Req() req: IAuthRequest,
+    @Param('mentorId') mentorId: string,
+  ): Promise<ApiResponseT> {
+    const menteeUserId = req.user.userId;
+    const subscriptionStatus: SubscriptionStatusType =
+      await this.subscriptionService.getSubscriptionStatus(
+        menteeUserId,
+        mentorId,
+      );
+    const response: ApiResponseT =
+      this.apiUtils.make_response(subscriptionStatus);
+    return response;
   }
 }
