@@ -47,7 +47,18 @@ export class MentorUserController {
   @Roles(ROLES.MENTOR)
   async getMentorProfile(@Req() req: IAuthRequest): Promise<ApiResponseT> {
     const userId = req.user.userId;
-    const mentorData = await this.mentorUserService.getMentorPrfile(userId);
+    const mentorData = await this.mentorUserService.getMentorProfile(userId);
+    const response: ApiResponseT = this.apiUtils.make_response(mentorData);
+    return response;
+  }
+
+  @Get('/mentorProfile/:mentorId')
+  async getMentorProfileByMentorId(
+    @Req() req: IAuthRequest,
+    @Param('mentorId') mentorId: string,
+  ): Promise<ApiResponseT> {
+    const mentorData =
+      await this.mentorUserService.getMentorProfileByMentorId(mentorId);
     const response: ApiResponseT = this.apiUtils.make_response(mentorData);
     return response;
   }

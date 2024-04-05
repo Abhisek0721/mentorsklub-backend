@@ -1,6 +1,6 @@
 import { DATABASE_NAME, ROLES } from '@constants/index';
 import { User } from '@modules/common/users/models/users.model';
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { Mentor } from '../models/mentor.model';
@@ -33,14 +33,14 @@ export class MentorUserService {
     return mentorData;
   }
 
-  async getMentorPrfile(userId: string | Types.ObjectId) {
+  async getMentorProfile(userId: string | Types.ObjectId) {
     let mentorData = await this.mentorProfileModel
       .findOne({
         user: userId,
       })
       .populate({
         path: 'user mentor',
-        select: '-password -createdAt -updatedAt',
+        select: '-password -createdAt -updatedAt -zoomTokens',
       })
       .lean();
     // if mentorProfile data is null, then create it
@@ -50,6 +50,25 @@ export class MentorUserService {
         user: userId,
         mentor: mentor._id,
       });
+    }
+    return mentorData;
+  }
+
+  async getMentorProfileByMentorId(mentorId: string) {
+    let mentorData = await this.mentorProfileModel
+      .findOne({
+        mentor: new Types.ObjectId(mentorId),
+      })
+      .populate({
+        path: 'user mentor',
+        select: '-password -createdAt -updatedAt -zoomTokens',
+      })
+      .lean();
+    // if mentorProfile data is null, then create it
+    if (!mentorData) {
+      throw new BadRequestException(
+        `Mentor with mentorId ${mentorId} doesn't exist`,
+      );
     }
     return mentorData;
   }
@@ -133,8 +152,8 @@ export class MentorUserService {
           subscription: '$subscription',
           createdAt: 1,
           updatedAt: 1,
-        }
-      }
+        },
+      },
     ]);
     return {
       data: mentorData,
