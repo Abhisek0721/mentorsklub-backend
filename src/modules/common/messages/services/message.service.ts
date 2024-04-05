@@ -5,6 +5,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { Message } from '../models/message.model';
 import { SendMessageDTO } from '../dto/sendMessage.dto';
+import { ValidateDataUtils } from '@utils/utils.service';
 
 @Injectable()
 export class MessageService {
@@ -18,17 +19,16 @@ export class MessageService {
     senderUserId: string | Types.ObjectId,
     sendMessageDto: SendMessageDTO,
   ): Promise<Message> {
-    if(!sendMessageDto.receiverUserId) {
-      throw new BadRequestException(
-        `Invalid receiverUserId`
-      );
-    }
+    ValidateDataUtils.validateObjectIdString(
+      sendMessageDto.receiverUserId,
+      'receiverUserId',
+    );
     const checkReceiver = await this.userModel.exists({
-      _id: new Types.ObjectId(sendMessageDto.receiverUserId)
+      _id: new Types.ObjectId(sendMessageDto.receiverUserId),
     });
-    if(!checkReceiver) {
+    if (!checkReceiver) {
       throw new BadRequestException(
-        `Receiver with userId ${sendMessageDto.receiverUserId} doesn't exist`
+        `Receiver with userId ${sendMessageDto.receiverUserId} doesn't exist`,
       );
     }
     const messageSent: Message = await this.messageModel.create({
@@ -38,5 +38,63 @@ export class MessageService {
       replyTo: sendMessageDto.replyTo,
     });
     return messageSent;
+  }
+
+  async getMessagesOfSender(
+    receiverUserId: string | Types.ObjectId,
+    senderUserId: string,
+  ): Promise<Message[]> {
+    ValidateDataUtils.validateObjectIdString(senderUserId, 'senderUserId');
+    const checkReceiver = await this.userModel.exists({
+      _id: new Types.ObjectId(senderUserId),
+    });
+    if (!checkReceiver) {
+      throw new BadRequestException(
+        `Sender with userId ${senderUserId} doesn't exist`,
+      );
+    }
+    const messages: Message[] = await this.messageModel
+      .find({
+        $or: [
+          { sender: [new Types.ObjectId(senderUserId), receiverUserId] },
+          { receiver: [new Types.ObjectId(senderUserId), receiverUserId] },
+        ],
+        deleted: false,
+      })
+      .select('-deleted');
+    return messages;
+  }
+
+  async messageContactUsers(receiverUserId: string | Types.ObjectId) {
+    const userId =
+      receiverUserId instanceof Types.ObjectId
+        ? receiverUserId
+        : new Types.ObjectId(receiverUserId);
+    const senderIds: any[] = await this.messageModel
+      .find({
+        $or: [{ sender: userId }, { receiver: userId }],
+        deleted: false,
+      })
+      .distinct('sender')
+      .exec();
+
+    const receiverIds: any[] = await this.messageModel
+      .find({
+        $or: [{ sender: userId }, { receiver: userId }],
+        deleted: false,
+      })
+      .distinct('receiver')
+      .exec();
+
+    const userIDs = [...new Set([...senderIds, ...receiverIds])];
+
+    const users: User[] = await this.userModel
+      .find({
+        _id: { $in: userIDs },
+      })
+      .select('-password')
+      .exec();
+
+    return users;
   }
 }
