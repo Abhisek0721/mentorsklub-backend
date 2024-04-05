@@ -6,6 +6,7 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types, UpdateWriteOpResult } from 'mongoose';
 import { Subscription } from '../models/subscription.model';
+import { SubscriptionStatusType } from '../types/subscriptionStatus.type';
 
 @Injectable()
 export class SubscriptionService {
@@ -208,6 +209,22 @@ export class SubscriptionService {
       totalData: totalCount,
       totalPages: totalPages,
       currentPage: pageNumber,
+    };
+  }
+
+  async getSubscriptionStatus(
+    menteeUserId: string | Types.ObjectId,
+  ): Promise<SubscriptionStatusType> {
+    const checkSubscription = await this.subscriptionModel.exists({
+      menteeUser: menteeUserId,
+    });
+    if (checkSubscription) {
+      return {
+        subscription: true,
+      };
+    }
+    return {
+      subscription: false,
     };
   }
 }
