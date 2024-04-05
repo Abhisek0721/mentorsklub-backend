@@ -4,6 +4,7 @@ import {
   PaginatedApiResponse as PaginatedApiResponseInterface,
 } from './interfaces';
 import { ApiResponseT, PaginatedApiResponse, PageT } from './types';
+import { UpdateWriteOpResult } from 'mongoose';
 
 export class BadRequestError extends Error {
   message: string;
@@ -107,6 +108,18 @@ class PaginatedResponse implements PaginatedApiResponseInterface {
 export class ApiUtilsService {
   constructor() {}
 
+  getDataUpdateMessage(subscribeUpdate: UpdateWriteOpResult):string {
+    let message:string;
+    if (subscribeUpdate.modifiedCount > 0) {
+      message = 'Updated Successfully';
+    } else if (subscribeUpdate.upsertedId) {
+      message = 'Inserted Successfully';
+    } else {
+      message = 'Data is same as in request payload';
+    }
+    return message;
+  }
+
   make_response(
     data: object,
     message: string = 'Successful',
@@ -176,7 +189,7 @@ export class ApiPageUtils {
   }): PageT {
     const totalData = Number(options.totalData);
     const currentPage = Number(options.currentPage);
-    const totalPages = Number(options.totalPages)
+    const totalPages = Number(options.totalPages);
     let next: number | null = Number(currentPage) + 1;
     let previous: number | null = Number(currentPage) - 1;
 
