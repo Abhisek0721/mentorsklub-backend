@@ -6,6 +6,7 @@ import { User, UserSchema } from '@modules/common/users/models/users.model';
 import { DATABASE_NAME } from '@constants/index';
 import { Mentor, MentorSchema } from './models/mentor.model';
 import { MentorProfile, MentorProfileSchema } from './models/mentorProfile.model';
+import { Subscription, SubscriptionSchema } from '@modules/mentee/subscription/models/subscription.model';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { MentorProfile, MentorProfileSchema } from './models/mentorProfile.model
         { name: User.name, schema: UserSchema },
         { name: Mentor.name, schema: MentorSchema },
         { name: MentorProfile.name, schema: MentorProfileSchema },
+        { name: Subscription.name, schema: SubscriptionSchema }
       ],
       DATABASE_NAME,
     ),
