@@ -22,8 +22,8 @@ export class SubscriptionService {
     const checkMentor = await this.mentorModel.exists({
       _id: new Types.ObjectId(mentorId),
     });
-    if(checkMentor) {
-        return true;
+    if (checkMentor) {
+      return true;
     }
     return false;
   }
@@ -78,14 +78,136 @@ export class SubscriptionService {
       .select('_id user');
 
     // update subscribe data if exists orelse create it
-    const subscribeUpdate =
-      await this.subscriptionModel.deleteOne(
-        {
-          menteeUser: menteeUserId,
-          mentee: mentee._id,
-          mentor: new Types.ObjectId(mentorId),
-        }
-      );
+    const subscribeUpdate = await this.subscriptionModel.deleteOne({
+      menteeUser: menteeUserId,
+      mentee: mentee._id,
+      mentor: new Types.ObjectId(mentorId),
+    });
     return subscribeUpdate;
+  }
+
+  async getSessionsOfSubscribedMentor(
+    menteeUserId: string | Types.ObjectId,
+    mentorId: string,
+    pageNumber: number,
+    limit: number,
+  ) {
+    if (!pageNumber || pageNumber < 0) {
+      pageNumber = 1;
+    }
+    if (!limit || limit < 1) {
+      limit = 10;
+    }
+    // verify mentorId
+    const checkMentor = await this.checkMentor(mentorId);
+    if (!checkMentor) {
+      throw new BadRequestException(
+        `Mentor with mentorId ${mentorId} doesn't exist`,
+      );
+    }
+    // verify subscription
+    const subscription = await this.subscriptionModel
+      .findOne({
+        menteeUser: menteeUserId,
+        mentor: mentorId,
+      })
+      .select('mentor');
+
+    if (!subscription) {
+      throw new BadRequestException(
+        `Subscription not found for mentorId ${mentorId}`,
+      );
+    }
+    // total number of sessions
+    const totalCount = await this.sessionMeetModel.countDocuments({
+      mentor: subscription.mentor,
+    });
+    // total pages for pagination
+    let totalPages = (totalCount / limit) | 0;
+    if (totalPages < totalCount / limit) {
+      totalPages = totalPages + 1;
+    }
+    // fetch all sessions of a subscribed mentor
+    const sessionData = await this.sessionMeetModel
+      .find({
+        mentor: subscription.mentor,
+      })
+      .skip((pageNumber - 1) * limit)
+      .limit(limit)
+      .sort({ startTime: -1 })
+      .lean(); // Sort by startTime in descending order;
+
+    return {
+      data: sessionData,
+      totalData: totalCount,
+      totalPages: totalPages,
+      currentPage: pageNumber,
+    };
+  }
+
+  async getAllSubscribedMentors(
+    menteeUserId: string | Types.ObjectId,
+    pageNumber: number,
+    limit: number,
+  ) {
+    if (!pageNumber || pageNumber < 0) {
+      pageNumber = 1;
+    }
+    if (!limit || limit < 1) {
+      limit = 10;
+    }
+    // total number of subscription
+    const totalCount = await this.subscriptionModel.countDocuments({
+      menteeUser: menteeUserId,
+    });
+    // total pages for pagination
+    let totalPages = (totalCount / limit) | 0;
+    if (totalPages < totalCount / limit) {
+      totalPages = totalPages + 1;
+    }
+    const subscribedMentors = await this.subscriptionModel.aggregate([
+      { $match: { menteeUser: menteeUserId } },
+      {
+        $lookup: {
+          from: 'mentors',
+          localField: 'mentor',
+          foreignField: '_id',
+          as: 'mentor',
+        },
+      },
+      { $unwind: '$mentor' },
+      {
+        $lookup: {
+          from: 'users',
+          localField: 'mentor.user',
+          foreignField: '_id',
+          as: 'mentor.user',
+        },
+      },
+      { $unwind: '$mentor.user' },
+      {
+        $project: {
+          mentorUserId: '$mentor.user._id',
+          mentorId: '$mentor._id',
+          mentorName: '$mentor.user.fullName',
+          mentorEmail: '$mentor.user.email',
+          mentorPhoneNumber: '$mentor.user.phoneNumber',
+          mentorField: '$mentor.field',
+          mentorAvailabilityTime: '$mentor.availabilityTime',
+          mentorTeaches: '$mentor.teaches',
+          createdAt: 1,
+          updatedAt: 1,
+        },
+      },
+      { $sort: { createdAt: -1 } },
+      { $skip: (pageNumber - 1) * limit },
+      { $limit: limit },
+    ]);
+    return {
+      data: subscribedMentors,
+      totalData: totalCount,
+      totalPages: totalPages,
+      currentPage: pageNumber,
+    };
   }
 }
