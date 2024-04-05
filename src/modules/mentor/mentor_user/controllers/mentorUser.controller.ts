@@ -53,12 +53,16 @@ export class MentorUserController {
   }
 
   @Get('/all-mentors')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, RoleGuard)
+  @Roles(ROLES.MENTEE)
   async getAllMentors(
+    @Req() req: IAuthRequest,
     @Query('pageNumber') pageNumber: number,
     @Query('limit') limit: number,
   ): Promise<ApiResponseT> {
+    const menteeUserId = req.user.userId;
     const data = await this.mentorUserService.getAllMentorData(
+      menteeUserId,
       Number(pageNumber),
       Number(limit),
     );

@@ -54,7 +54,11 @@ export class MentorUserService {
     return mentorData;
   }
 
-  async getAllMentorData(pageNumber: number, limit: number) {
+  async getAllMentorData(
+    menteeUserId: string | Types.ObjectId,
+    pageNumber: number,
+    limit: number,
+  ) {
     if (!pageNumber || pageNumber < 0) {
       pageNumber = 1;
     }
@@ -69,15 +73,69 @@ export class MentorUserService {
       totalPages = totalPages + 1;
     }
     const skipFrom = (pageNumber - 1) * limit;
-    const mentorData = await this.mentorModel
-      .find()
-      .populate({
-        path: 'user',
-        select: '-password -createdAt -updatedAt',
-      })
-      .limit(limit)
-      .skip(skipFrom)
-      .lean();
+    const mentorData = await this.mentorModel.aggregate([
+      { $match: {} },
+      {
+        $lookup: {
+          from: 'users',
+          localField: 'user',
+          foreignField: '_id',
+          as: 'user',
+        },
+      },
+      { $unwind: '$user' },
+      { $sort: { createdAt: -1 } },
+      { $skip: skipFrom },
+      { $limit: limit },
+      {
+        $lookup: {
+          from: 'subscriptions',
+          let: { mentorId: '$_id' },
+          pipeline: [
+            {
+              $match: {
+                $expr: {
+                  $and: [
+                    { $eq: ['$mentor', '$$mentorId'] },
+                    { $eq: ['$menteeUser', menteeUserId] },
+                  ],
+                },
+              },
+            },
+            { $project: { _id: 1 } },
+          ],
+          as: 'subscription',
+        },
+      },
+      {
+        $addFields: {
+          subscription: {
+            $cond: {
+              if: { $gt: [{ $size: '$subscription' }, 0] },
+              then: true,
+              else: false,
+            },
+          },
+        },
+      },
+      {
+        $project: {
+          mentorUserId: '$user._id',
+          mentorId: '$_id',
+          mentorName: '$user.fullName',
+          mentorEmail: '$user.email',
+          mentorProfileUrl: '$user.profileImageKey',
+          mentorLocation: '$user.location',
+          mentorPhoneNumber: '$user.phoneNumber',
+          mentorField: '$field',
+          mentorAvailabilityTime: '$availabilityTime',
+          mentorTeaches: '$teaches',
+          subscription: '$subscription',
+          createdAt: 1,
+          updatedAt: 1,
+        }
+      }
+    ]);
     return {
       data: mentorData,
       totalData: mentorCount,
@@ -124,19 +182,19 @@ export class MentorUserService {
     userId: string | Types.ObjectId,
     mentorId: string,
     mentorProfileDto: MentorProfileDTO,
-  ):Promise<MentorProfile> {
+  ): Promise<MentorProfile> {
     const mentorProfile = this.mentorProfileModel.findOneAndUpdate(
       {
         user: userId,
-        mentor: mentorId
+        mentor: mentorId,
       },
       {
-        $set: mentorProfileDto
+        $set: mentorProfileDto,
       },
       {
         new: true,
-        upsert: true
-      }
+        upsert: true,
+      },
     );
     return mentorProfile;
   }
