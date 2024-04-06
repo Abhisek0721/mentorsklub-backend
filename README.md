@@ -5,8 +5,6 @@ This is the backend component of MentorsKlub, a virtual mentorship software deve
 ### Backend Live: https://mentorsklub-api.onrender.com
 ### Frontend Live: https://mentorsklub.vercel.app
 
----
-
 ## Features
 
 - **Authentication:** User registration, login, and JWT-based authentication.
@@ -30,16 +28,16 @@ This is the backend component of MentorsKlub, a virtual mentorship software deve
 2. Install dependencies: `npm install`
 3. Set up environment variables: Create a `.env` file and define the following variables:
    ```
-  PORT=3001
-  DATABASE_URI=mongodb://localhost:27017
-  DATABASE_NAME=mentorsklub
-  ENCRYPTION_KEY=your_encription_key
-  JWT_SECRET=your_jwt_secret
-  JWT_EXPIRY_TIME=3d
-  BACKEND_URL=http://localhost:3001
-  FRONTEND_URL=http://localhost:3000
-  ZOOM_APP_CLIENT_ID=your_zoom_client_id
-  ZOOM_APP_CLIENT_SECRET=your_zoom_client_secret
+      PORT=3001
+      DATABASE_URI=mongodb://localhost:27017
+      DATABASE_NAME=mentorsklub
+      ENCRYPTION_KEY=your_encription_key
+      JWT_SECRET=your_jwt_secret
+      JWT_EXPIRY_TIME=3d
+      BACKEND_URL=http://localhost:3001
+      FRONTEND_URL=http://localhost:3000
+      ZOOM_APP_CLIENT_ID=your_zoom_client_id
+      ZOOM_APP_CLIENT_SECRET=your_zoom_client_secret
    ```
 4. Run the server: `npm run dev`
 
@@ -51,13 +49,11 @@ The API documentation for MentorsKlub Backend is available on Postman. You can v
 - **Mentee Collection:** [Mentee Collection](https://documenter.getpostman.com/view/16254597/2sA35MxJVW)
 - **Mentor Collection:** [Mentor Collection](https://documenter.getpostman.com/view/16254597/2sA35MxJVY)
 - **Zoom Collection:** [Zoom Collection](https://documenter.getpostman.com/view/16254597/2sA35MxJVZ)
----
 
 ## License
 
 This project is licensed under the MIT License - see the [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/Abhisek0721/mentorsklub-backend/blob/main/LICENSE)
  file for details.
 
----
-
+</br></br>
 Feel free to contact me: abhisek0721@gmail.com
