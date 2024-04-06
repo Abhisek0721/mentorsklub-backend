@@ -48,7 +48,7 @@ export class MentorSubscriptionService {
       .populate('menteeUser')
       .skip((pageNumber - 1) * limit)
       .limit(limit)
-      .sort({ createdAt: -1 })
+      .sort({ createdAt: 1 })
       .lean();
 
     return {

@@ -200,7 +200,7 @@ export class SubscriptionService {
           updatedAt: 1,
         },
       },
-      { $sort: { createdAt: -1 } },
+      { $sort: { createdAt: 1 } },
       { $skip: (pageNumber - 1) * limit },
       { $limit: limit },
     ]);

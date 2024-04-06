@@ -164,7 +164,7 @@ export class SessionMeetService {
       })
       .skip((pageNumber - 1) * limit)
       .limit(limit)
-      .sort({ startTime: -1 })
+      .sort({ startTime: 1 })
       .lean(); // Sort by startTime in descending order;
 
     return {

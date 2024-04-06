@@ -104,7 +104,7 @@ export class MentorUserService {
         },
       },
       { $unwind: '$user' },
-      { $sort: { createdAt: -1 } },
+      { $sort: { createdAt: 1 } },
       { $skip: skipFrom },
       { $limit: limit },
       {
