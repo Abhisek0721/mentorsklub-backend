@@ -29,6 +29,7 @@ export class MentorUserService {
         path: 'user',
         select: '-password -createdAt -updatedAt',
       })
+      .select('-zoomTokens')
       .lean();
     return mentorData;
   }

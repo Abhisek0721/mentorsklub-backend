@@ -6,6 +6,7 @@ import { Model, Types, UpdateWriteOpResult } from 'mongoose';
 import { ChangePasswordDTO } from '../dto/changePassword.dto';
 import * as bcrypt from 'bcrypt';
 import { EditUserDTO } from '../dto/editUser.dto';
+import { UploadProfileImageDTO } from '../dto/uploadProfileImage.dto';
 
 @Injectable()
 export class UserService {
@@ -72,7 +73,7 @@ export class UserService {
         {
           fullName: editUserDto.fullName,
           phoneNumber: editUserDto.phoneNumber,
-          location: editUserDto.location
+          location: editUserDto.location,
         },
         { new: true },
       )
@@ -84,6 +85,24 @@ export class UserService {
     const user: User = await this.userModel
       .findById(userId)
       .select('-password');
+    return user;
+  }
+
+  async updateProfileImage(
+    userId: string | Types.ObjectId,
+    profileImageDto: UploadProfileImageDTO,
+  ): Promise<User> {
+    const user: User = await this.userModel.findOneAndUpdate(
+      {
+        _id: new Types.ObjectId(userId),
+      },
+      {
+        $set: {
+          profileImageKey: profileImageDto.profileImageUri,
+        },
+      },
+      { new: true },
+    ).select("-password");
     return user;
   }
 }
