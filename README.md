@@ -52,7 +52,7 @@ The API documentation for MentorsKlub Backend is available on Postman. You can v
 
 ## License
 
-This project is licensed under the MIT License - see the [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/Abhisek0721/mentorsklub-backend/blob/master/LICENSE)
+This project is licensed under the MIT License - see the [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/Abhisek0721/mentorsklub-backend/blob/master/LICENCE)
  file for details.
 
 </br></br>
