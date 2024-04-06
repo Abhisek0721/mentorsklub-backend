@@ -1,4 +1,12 @@
-import { Body, Controller, Get, Patch, Post, Req, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Patch,
+  Post,
+  Req,
+  UseGuards,
+} from '@nestjs/common';
 import { ApiUtilsService } from '@utils/utils.service';
 import { ApiResponseT } from '@utils/types';
 import { ChangePasswordDTO } from '../dto/changePassword.dto';
@@ -8,38 +16,64 @@ import { UserService } from '../services/user.service';
 import { UpdateWriteOpResult } from 'mongoose';
 import { EditUserDTO } from '../dto/editUser.dto';
 import { User } from '../models/users.model';
+import { UploadProfileImageDTO } from '../dto/uploadProfileImage.dto';
 
-
-@Controller("user")
+@Controller('user')
 export class UserController {
   constructor(
     private readonly userService: UserService,
     private readonly apiUtils: ApiUtilsService,
   ) {}
 
-  @Patch("change-password")
+  @Patch('change-password')
   @UseGuards(JwtAuthGuard)
-  async changePassword(@Req() req: IAuthRequest, @Body() changePasswordDto:ChangePasswordDTO) {
+  async changePassword(
+    @Req() req: IAuthRequest,
+    @Body() changePasswordDto: ChangePasswordDTO,
+  ) {
     const userId = req.user.userId;
-    const output:UpdateWriteOpResult = await this.userService.changePassword(changePasswordDto, userId);
-    const response:ApiResponseT = this.apiUtils.make_response(output, "Password has been updated!");
+    const output: UpdateWriteOpResult = await this.userService.changePassword(
+      changePasswordDto,
+      userId,
+    );
+    const response: ApiResponseT = this.apiUtils.make_response(
+      output,
+      'Password has been updated!',
+    );
     return response;
   }
 
-  @Patch("edit-user")
+  @Patch('edit-user')
   @UseGuards(JwtAuthGuard)
-  async editUser(@Req() req: IAuthRequest, @Body() editUserDto:EditUserDTO) {
+  async editUser(@Req() req: IAuthRequest, @Body() editUserDto: EditUserDTO) {
     const userId = req.user.userId;
-    const output:User = await this.userService.editUser(editUserDto, userId);
-    const response:ApiResponseT = this.apiUtils.make_response(output, "User profile has been updated!");
+    const output: User = await this.userService.editUser(editUserDto, userId);
+    const response: ApiResponseT = this.apiUtils.make_response(
+      output,
+      'User profile has been updated!',
+    );
     return response;
   }
 
   @Get()
   @UseGuards(JwtAuthGuard)
-  async getUserById(@Req() req: IAuthRequest):Promise<ApiResponseT> {
-    const user:User = await this.userService.getUserById(req.user.userId);
-    const response:ApiResponseT = this.apiUtils.make_response(user);
+  async getUserById(@Req() req: IAuthRequest): Promise<ApiResponseT> {
+    const user: User = await this.userService.getUserById(req.user.userId);
+    const response: ApiResponseT = this.apiUtils.make_response(user);
+    return response;
+  }
+
+  @Patch('upload-profile-image')
+  @UseGuards(JwtAuthGuard)
+  async uploadProfileImage(
+    @Req() req: IAuthRequest,
+    @Body() profileImageDto: UploadProfileImageDTO,
+  ) {
+    const user: User = await this.userService.updateProfileImage(
+      req.user.userId,
+      profileImageDto,
+    );
+    const response: ApiResponseT = this.apiUtils.make_response(user);
     return response;
   }
 }
