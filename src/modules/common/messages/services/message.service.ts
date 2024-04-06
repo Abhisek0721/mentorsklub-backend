@@ -127,10 +127,15 @@ export class MessageService {
     messageId: string
   ) {
     ValidateDataUtils.validateObjectIdString(messageId, 'messageId');
-    const messageDelete = await this.messageModel.deleteOne(
+    const messageDelete = await this.messageModel.updateOne(
       {
         _id: new Types.ObjectId(messageId),
         sender: senderUserId,
+      },
+      {
+        $set: {
+          delete: true
+        }
       }
     );
     return messageDelete;
