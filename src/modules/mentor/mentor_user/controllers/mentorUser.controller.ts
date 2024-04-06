@@ -136,4 +136,18 @@ export class MentorUserController {
       );
     return this.apiUtils.make_response(data);
   }
+
+  @Get('/getZoomAuthStatus')
+  @UseGuards(JwtAuthGuard, RoleGuard)
+  @Roles(ROLES.MENTOR)
+  async getZoomAuthStatus(
+    @Req() req: IAuthRequest,
+  ): Promise<ApiResponseT> {
+    const userId = req.user.userId;
+    const statusData:{status: boolean} =
+      await this.mentorUserService.getZoomAuthStatus(
+        userId,
+      );
+    return this.apiUtils.make_response(statusData);
+  }
 }

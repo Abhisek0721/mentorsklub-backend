@@ -218,4 +218,21 @@ export class MentorUserService {
     );
     return mentorProfile;
   }
+
+
+  async getZoomAuthStatus(mentorUserId:string|Types.ObjectId):Promise<{status: boolean}> {
+    const mentor = await this.mentorModel.findOne(
+      {
+        user: mentorUserId
+      }
+    ).select("zoomTokens");
+    if(mentor?.zoomTokens?.refreshToken) {
+      return {
+        status: true
+      }
+    }
+    return {
+      status: false
+    }
+  }
 }
